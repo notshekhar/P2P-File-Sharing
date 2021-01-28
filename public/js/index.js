@@ -35,7 +35,7 @@ socket.on("user-joined", (uid) => {
 
 socket.on("confirmed-joined", (uid) => {
     // console.log(uid)
-    console.log(uid, "->", "joined room")
+    console.log("joined with user", "->", uid)
     root.innerHTML += `<br>${uid} -> joined room`
     connectedUsers.add(uid)
 })
