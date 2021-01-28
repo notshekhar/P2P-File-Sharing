@@ -1,0 +1,38 @@
+body {
+    background: #191919;
+}
+.p {
+    position: absolute;
+    top: calc(50% - 100px);
+    left: calc(50% - 75px);
+    height: 200px;
+    width: 150px;
+    background: #f2ad43;
+    border-radius: 300px 300px 80px 80px;
+    overflow: hidden;
+}
+.c0 {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: #fff58f;
+    top: calc(50% - 10px);
+    left: calc(50% - 30px);
+}
+.c {
+    position: absolute;
+    height: 200px;
+    width: 200px;
+    background: #824b20;
+    top: 100%;
+    transform: translate(-100px, -100px);
+}
+.c1 {
+    left: 100%;
+}
+.c2 {
+    background: #e08027;
+}
+.r {
+    border-radius: 50%;
+}
