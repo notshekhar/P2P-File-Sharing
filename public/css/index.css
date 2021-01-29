@@ -57,7 +57,7 @@ body {
     max-height: 80px;
     max-width: 80px;
     border-radius: 5px;
-    background-color: var(--light-bg);
+    /* background-color: var(--light-bg); */
     display: grid;
     place-items: center;
     font-family: sans-serif;
@@ -72,6 +72,7 @@ body {
         max-height: 0px;
         max-width: 0px;
         opacity: 0;
+        transform: rotate(45deg);
     }
     to {
         min-height: 80px;
@@ -79,6 +80,7 @@ body {
         max-height: 80px;
         max-width: 80px;
         opacity: 1;
+        transform: rotate(0deg);
     }
 }
 
@@ -90,10 +92,67 @@ body {
 }
 
 .root > .chat {
+    position: relative;
     width: 400px;
     background: var(--secondary-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
-
+.root > .chat > .input {
+    /* position: absolute; */
+    position: relative;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    background-color: var(--light-bg);
+    height: 45px;
+    display: flex;
+    border-top: solid;
+    border-color: var(--secondary-bg);
+    border-width: 10px;
+}
+.root > .chat > .input > * {
+    background-color: var(--light-bg);
+    border: none;
+    color: white;
+    outline: none;
+}
+.root > .chat > .input > input {
+    position: relative;
+    width: calc(100% - 45px);
+    padding: 0 20px 0 20px;
+    font-weight: 600;
+}
+.root > .chat > .input > button {
+    position: relative;
+    width: 45px;
+    font-weight: 800;
+}
+.root > .chat > .body {
+    position: relative;
+    padding: 20px 20px 20px 20px;
+    overflow-y: scroll;
+    height: calc(100% - 45px);
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+.root > .chat > .body > .notification_message {
+    font-family: sans-serif;
+    font-size: 13px;
+    /* font-weight: 600; */
+    color: #5a5a5a;
+    /* border: dotted; */
+    padding: 5px;
+    border-width: 2px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: var(--light-bg);
+}
+.root > .chat > .body > .notification_message > span {
+    font-weight: 600;
+    color: #6a6a6a;
+}
 .root > * {
     /* background: var(--secondary-bg); */
     margin: 20px;
@@ -105,6 +164,51 @@ body {
     -webkit-box-direction: normal;
     -ms-flex-direction: column;
     flex-direction: column;
+}
+.message {
+    position: relative;
+    padding: 10px;
+    background-color: var(--light-bg);
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: message-appear 400ms forwards;
+    width: calc(100% - 50px);
+}
+.message-sent {
+    margin-left: auto;
+}
+.message-recieved {
+    margin-right: auto;
+}
+@keyframes message-appear {
+    from {
+        right: 200%;
+        transform: scale(2) rotate(20deg);
+    }
+    to {
+        right: 0;
+        transform: scale(1) rotate(0deg);
+    }
+}
+.message > .icon {
+    position: relative;
+    min-width: 25px;
+    min-height: 25px;
+    border-radius: 5px;
+}
+.message > .text > .title {
+    position: relative;
+    font-weight: 600;
+    font-family: sans-serif;
+    color: #6a6a6a;
+    font-size: 13px;
+}
+.message > .text > .value {
+    position: relative;
+    font-family: sans-serif;
 }
 
 @media (max-width: 820px) {
