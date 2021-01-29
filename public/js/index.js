@@ -13,7 +13,7 @@ const v4 = function () {
 
 const root = document.querySelector(".root")
 const id = v4()
-let connectedUsers = new Set()
+let connectedUsers = {}
 
 const peer = new Peer(id, {
     host: location.hostname,
@@ -28,20 +28,47 @@ peer.on("open", (id) => {
 })
 socket.on("user-joined", (uid) => {
     console.log(uid, "->", "joined room")
-    root.innerHTML += `<br>${uid} -> joined room`
+    // root.innerHTML += `<br>${uid} -> joined room`
     socket.emit("confirmed-joined", uid, id)
-    connectedUsers.add(uid)
+    let connection = peer.connect(uid)
+    connectedUsers[uid] = connection
+    addUserDiv(uid)
 })
 
 socket.on("confirmed-joined", (uid) => {
-    // console.log(uid)
     console.log("joined with user", "->", uid)
-    root.innerHTML += `<br>${uid} -> joined room`
-    connectedUsers.add(uid)
+    // root.innerHTML += `<br>${uid} -> joined room`
+    let connection = peer.connect(uid)
+    connectedUsers[uid] = connection
+    addUserDiv(uid)
 })
 socket.on("user-disconnected", (uid) => {
-    root.innerHTML += `<br>${uid} -> disconnected from room`
-    connectedUsers.delete(uid)
+    // root.innerHTML += `<br>${uid} -> disconnected from room`
+    delete connectedUsers[uid]
+    removeUserDiv(uid)
 })
 
-root.innerHTML = "no user is connected"
+peer.on("connection", (connection) => {
+    connection.on("data", (e) => {
+        console.log(e)
+    })
+})
+
+// message = (type, data, id)
+
+function addUserDiv(id) {
+    let user = document.querySelector(".users")
+    let sampleName = id.toString().slice(0, 4)
+    let div = document.createElement("div")
+    div.id = `_${id}`
+    let span = document.createElement("span")
+    span.innerHTML = sampleName + ".."
+    div.append(span)
+    user.append(div)
+}
+
+function removeUserDiv(id) {
+    let uid = document.querySelector(`#_${id}`)
+    console.log(uid)
+    uid.remove()
+}

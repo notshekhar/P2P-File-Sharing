@@ -1,38 +1,118 @@
+:root {
+    --background: #111;
+    --secondary-bg: #202020;
+    --light-bg: #2a2a2a;
+    --color: #eeeeee;
+}
+
+*::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
 body {
-    background: #191919;
+    background: #111;
 }
-.p {
+
+.root {
     position: absolute;
-    top: calc(50% - 100px);
-    left: calc(50% - 75px);
-    height: 200px;
-    width: 150px;
-    background: #f2ad43;
-    border-radius: 300px 300px 80px 80px;
-    overflow: hidden;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+    background-color: var(--background);
+    color: var(--color);
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
 }
-.c0 {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    background: #fff58f;
-    top: calc(50% - 10px);
-    left: calc(50% - 30px);
+
+.root > .share_file_container {
+    width: calc(100% - 420px);
 }
-.c {
-    position: absolute;
-    height: 200px;
-    width: 200px;
-    background: #824b20;
-    top: 100%;
-    transform: translate(-100px, -100px);
+
+.root > .share_file_container > * {
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: var(--secondary-bg);
 }
-.c1 {
-    left: 100%;
+
+.root > .share_file_container > .connected-users {
+    position: relative;
+    height: max-content;
+    padding: 20px 0 20px 20px;
+    /* overflow-x: scroll; */
 }
-.c2 {
-    background: #e08027;
+.root > .share_file_container > .connected-users > .users {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    align-items: center;
 }
-.r {
-    border-radius: 50%;
+.root > .share_file_container > .connected-users > .users > * {
+    min-height: 80px;
+    min-width: 80px;
+    max-height: 80px;
+    max-width: 80px;
+    border-radius: 5px;
+    background-color: var(--light-bg);
+    display: grid;
+    place-items: center;
+    font-family: sans-serif;
+    font-size: 16px;
+    font-weight: 800;
+    animation: show-user 600ms forwards;
 }
+@keyframes show-user {
+    from {
+        min-height: 0px;
+        min-width: 0px;
+        max-height: 0px;
+        max-width: 0px;
+        opacity: 0;
+    }
+    to {
+        min-height: 80px;
+        min-width: 80px;
+        max-height: 80px;
+        max-width: 80px;
+        opacity: 1;
+    }
+}
+
+.root > .share_file_container > .connected-users > .title {
+    font-family: sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color);
+}
+
+.root > .chat {
+    width: 400px;
+    background: var(--secondary-bg);
+}
+
+.root > * {
+    /* background: var(--secondary-bg); */
+    margin: 20px;
+    border-radius: 5px;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+@media (max-width: 820px) {
+    .root > .share_file_container {
+        width: 100%;
+    }
+    .root > .chat {
+        display: none;
+    }
+}
+/*# sourceMappingURL=index.css.map */

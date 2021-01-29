@@ -6,12 +6,31 @@
         <title>Share files</title>
         <script src="./js/peerjs.min.js"></script>
         <script src="./js/socket.io.js"></script>
+        <link rel="stylesheet" href="./css/index.css" />
         <script>
             const ROOM_ID = "<%= id %>"
         </script>
     </head>
     <body>
-        <div class="root"></div>
+        <div class="root">
+            <div class="share_file_container">
+                <div class="connected-users">
+                    <div class="title">Connected Users</div>
+                    <div class="users"></div>
+                </div>
+                <div class="send">
+                    <div class="add"></div>
+                </div>
+                <div class="history"></div>
+            </div>
+            <div class="chat">
+                <div class="body"></div>
+                <div class="input">
+                    <input type="text" placeholder="Enter a Text" />
+                    <button>Send</button>
+                </div>
+            </div>
+        </div>
     </body>
     <script src="./js/index.js"></script>
 </html>
