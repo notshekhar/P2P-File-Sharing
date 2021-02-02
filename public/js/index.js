@@ -229,11 +229,22 @@ function printFileMeta(meta, e) {
     let div = document.createElement("div")
     div.id = `_${meta.id}`
     div.classList.add("file_card")
+    let size = calculateSize(meta.size)
     if (e)
-        div.innerHTML = `<div class="icon"></div><div class="body"><div class="title">${meta.name}</div><div class="size">${meta.size}</div><div class="down-cancel"><button>Download</button><button>Cancel</button></div></div>`
+        div.innerHTML = `<div class="icon" style="background-color:${
+            connections[meta.from].color
+        }"></div><div class="body"><div class="title">${
+            meta.name
+        }</div><div class="size">${size}</div><div class="down-cancel"><button class="_down">Download</button><button class="_cancel">Cancel</button></div></div>`
     else
-        div.innerHTML = `<div class="icon"></div><div class="body"><div class="title">${meta.name}</div><div class="size">${meta.size}</div></div>`
+        div.innerHTML = `<div class="icon" style="background-color:black"></div><div class="body"><div class="title">${meta.name}</div><div class="size">${size}</div></div>`
     history.prepend(div)
+}
+function calculateSize(bytes) {
+    let sizes = ["Bytes", "KB", "MB", "GB", "TB"]
+    if (bytes == 0) return "0 Byte"
+    let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)))
+    return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i]
 }
 
 // #2f0000
