@@ -44,6 +44,11 @@ body {
     padding: 20px 0 20px 20px;
     /* overflow-x: scroll; */
 }
+.root > .share_file_container > .connected-users > .waiting {
+    font-family: sans-serif;
+    margin-top: 20px;
+    color: orange;
+}
 .root > .share_file_container > .connected-users > .users {
     display: flex;
     gap: 10px;
@@ -63,6 +68,7 @@ body {
     font-family: sans-serif;
     font-size: 16px;
     font-weight: 800;
+    color: rgba(0, 0, 0, 0.4);
     animation: show-user 600ms forwards;
 }
 @keyframes show-user {
@@ -72,7 +78,7 @@ body {
         max-height: 0px;
         max-width: 0px;
         opacity: 0;
-        transform: rotate(45deg);
+        transform: rotate(45deg) scale(1.5);
     }
     to {
         min-height: 80px;
@@ -80,7 +86,7 @@ body {
         max-height: 80px;
         max-width: 80px;
         opacity: 1;
-        transform: rotate(0deg);
+        transform: rotate(0deg) scale(1);
     }
 }
 
@@ -91,6 +97,44 @@ body {
     color: var(--color);
 }
 
+.root > .share_file_container > .send {
+    position: relative;
+    min-height: 100px;
+    padding: 20px;
+}
+.root > .share_file_container > .send > .drop_file {
+    position: relative;
+    border-radius: 5px;
+    border-color: #6a6a6a;
+    color: orange;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: sans-serif;
+    cursor: pointer;
+    font-size: 13px;
+    background-color: var(--light-bg);
+}
+input[type="file"] {
+    display: none;
+}
+.send > .drop_file > .icon {
+    background-color: grey;
+    height: 60px;
+    width: 60px;
+    border-radius: 5px;
+}
+.send > .drop_file > div > .browse {
+    font-weight: 600;
+    cursor: pointer;
+    color: #6a6a6a;
+}
+.root > .share_file_container > .history {
+    height: 100%;
+}
 .root > .chat {
     position: relative;
     width: 400px;
@@ -128,6 +172,9 @@ body {
     position: relative;
     width: 45px;
     font-weight: 800;
+}
+.root > .chat > .input > button > i {
+    transform: rotate(50deg) scale(0.8);
 }
 .root > .chat > .body {
     position: relative;

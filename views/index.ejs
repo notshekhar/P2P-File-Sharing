@@ -7,19 +7,34 @@
         <script src="./js/peerjs.min.js"></script>
         <script src="./js/socket.io.js"></script>
         <link rel="stylesheet" href="./css/index.css" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+        />
         <script>
             const ROOM_ID = "<%= id %>"
         </script>
     </head>
     <body>
+        <div class="new_message">
+            <i>show</i>
+        </div>
         <div class="root">
             <div class="share_file_container">
                 <div class="connected-users">
                     <div class="title">Connected Users</div>
+                    <div class="waiting">Waiting for user to connect....</div>
                     <div class="users"></div>
                 </div>
                 <div class="send">
-                    <div class="add"></div>
+                    <div class="drop_file">
+                        <input type="file" />
+                        <div class="icon"></div>
+                        <div>
+                            Drag and Drop File or
+                            <span class="browse">Browse</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="history"></div>
             </div>
@@ -27,7 +42,7 @@
                 <div class="body"></div>
                 <div class="input">
                     <input type="text" placeholder="Enter a Text" />
-                    <button>Send</button>
+                    <button><i class="fas fa-2x fa-paper-plane"></i></button>
                 </div>
             </div>
         </div>

@@ -15,6 +15,7 @@ const root = document.querySelector(".root")
 
 const id = v4()
 
+let files = {}
 let colors = new Set()
 function uniqueColor() {
     let c = "#xxxxxx"
@@ -33,7 +34,7 @@ function uniqueColor() {
     }
     return c
 }
-let connectedUsers = {}
+let connections = {}
 
 const peer = new Peer(id, {
     host: location.hostname,
@@ -42,6 +43,15 @@ const peer = new Peer(id, {
     path: "/",
 })
 const socket = io("/")
+
+function peerSend(data) {
+    for (let key in connections) {
+        let connection = connections[key].connection
+        connection.send(data)
+    }
+}
+
+checkConnections()
 
 peer.on("open", (id) => {
     socket.emit("join-room", ROOM_ID, id)
@@ -52,6 +62,7 @@ socket.on("user-joined", (uid) => {
     socket.emit("confirmed-joined", uid, id)
     addConnection(uid)
     addUserDiv(uid)
+    checkConnections()
 })
 
 socket.on("confirmed-joined", (uid) => {
@@ -59,17 +70,22 @@ socket.on("confirmed-joined", (uid) => {
     // root.innerHTML += `<br>${uid} -> joined room`
     addConnection(uid)
     addUserDiv(uid)
+    checkConnections()
 })
 socket.on("user-disconnected", (uid) => {
     // root.innerHTML += `<br>${uid} -> disconnected from room`
     removeConnection(uid)
     removeUserDiv(uid)
+    checkConnections()
 })
 
 peer.on("connection", (connection) => {
     connection.on("data", (e) => {
+        console.log(e)
         if (e.type == "text") {
             addChat(e, true)
+        } else if (e.type == "meta") {
+            printFileMeta(e)
         }
     })
 })
@@ -83,13 +99,35 @@ input.addEventListener("change", () => sendMessage())
 function sendMessage() {
     let value = input.value
     input.value = ""
-    for (let key in connectedUsers) {
-        let connection = connectedUsers[key].connection
-        connection.send({ message: value, from: id, type: "text" })
+    if (value.length > 0) {
+        peerSend({ message: value, from: id, type: "text" })
+        addChat({ message: value, from: id, type: "text" })
     }
-    addChat({ message: value, from: id, type: "text" })
 }
 
+function checkConnections() {
+    let keys = Object.keys(connections)
+    if (keys.length < 1) hideTools()
+    else showTools()
+}
+
+//show send_div
+function showTools() {
+    let send_div = document.querySelector(".send")
+    let history_div = document.querySelector(".history")
+    let waiting = document.querySelector(".waiting")
+    send_div.style.display = "block"
+    history_div.style.display = "block"
+    waiting.style.display = "none"
+}
+function hideTools() {
+    let send_div = document.querySelector(".send")
+    let history_div = document.querySelector(".history")
+    let waiting = document.querySelector(".waiting")
+    send_div.style.display = "none"
+    history_div.style.display = "none"
+    waiting.style.display = "block"
+}
 function addChat(chat, r) {
     let chat_body = document.querySelector(".chat > .body")
     let message_div = document.createElement("div")
@@ -97,7 +135,7 @@ function addChat(chat, r) {
     message_div.classList.add(r ? "message-recieved" : "message-sent")
     message_div.innerHTML = r
         ? `<div class="icon" style="background-color:${
-              connectedUsers[chat.from].color
+              connections[chat.from].color
           }"></div><div class="text"><div class="title">${
               chat.from
           }</div><div class="value">${chat.message}</div></div>`
@@ -107,18 +145,18 @@ function addChat(chat, r) {
 // message = (type, data, id)
 function addConnection(uid) {
     let connection = peer.connect(uid)
-    connectedUsers[uid] = { connection, color: uniqueColor() }
+    connections[uid] = { connection, color: uniqueColor() }
 }
 function removeConnection(uid) {
-    colors.delete(connectedUsers[uid].color)
-    delete connectedUsers[uid]
+    colors.delete(connections[uid].color)
+    delete connections[uid]
 }
 function addUserDiv(id) {
     let user = document.querySelector(".users")
     let sampleName = id.toString().slice(0, 4)
     let div = document.createElement("div")
     div.id = `_${id}`
-    div.style.backgroundColor = connectedUsers[id].color
+    div.style.backgroundColor = connections[id].color
     let span = document.createElement("span")
     span.innerHTML = sampleName + "..."
     div.append(span)
@@ -140,3 +178,59 @@ function removeUserDiv(id) {
     message_div.innerHTML = `<span>${id}</span> left the room`
     chat_body.prepend(message_div)
 }
+
+//file handle
+const drop_file = document.querySelector(".drop_file")
+const file_input = document.querySelector(".drop_file > input")
+
+file_input.onchange = (e) => {
+    let file = file_input.files[0]
+    sendFileMeta(file)
+}
+
+drop_file.onclick = (e) => {
+    file_input.click()
+}
+
+drop_file.ondragover = (e) => {
+    e.preventDefault()
+    drop_file.classList.add("dragHover")
+}
+drop_file.ondragleave = (e) => {
+    e.preventDefault()
+    drop_file.classList.remove("dragHover")
+}
+drop_file.ondrop = (e) => {
+    drop_file.classList.remove("dragHover")
+    e.preventDefault()
+    e.stopPropagation()
+    file_input.files = e.dataTransfer.files
+    let file = file_input.files[0]
+    sendFileMeta(file)
+}
+
+function sendFileMeta(file) {
+    let fid = v4()
+    files[fid] = file
+    let metaData = {
+        id: fid,
+        type: "meta",
+        fileType: file.type,
+        name: file.name,
+        size: file.size,
+        from: id,
+    }
+    peerSend(metaData)
+    printFileMeta(metaData)
+}
+
+function printFileMeta(meta) {
+    let history = document.querySelector(".history")
+    let div = document.createElement("div")
+    div.id = `_${meta.id}`
+    div.classList.add("file_card")
+    div.innerHTML = `<div class="icon"></div><div class="body"><div class="title">${meta.name}</div><div class="size>${meta.size}</div></div>`
+    history.prepend(div)
+}
+
+// #2f0000
