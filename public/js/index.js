@@ -85,7 +85,7 @@ peer.on("connection", (connection) => {
         if (e.type == "text") {
             addChat(e, true)
         } else if (e.type == "meta") {
-            printFileMeta(e)
+            printFileMeta(e, true)
         }
     })
 })
@@ -224,12 +224,15 @@ function sendFileMeta(file) {
     printFileMeta(metaData)
 }
 
-function printFileMeta(meta) {
+function printFileMeta(meta, e) {
     let history = document.querySelector(".history")
     let div = document.createElement("div")
     div.id = `_${meta.id}`
     div.classList.add("file_card")
-    div.innerHTML = `<div class="icon"></div><div class="body"><div class="title">${meta.name}</div><div class="size>${meta.size}</div></div>`
+    if (e)
+        div.innerHTML = `<div class="icon"></div><div class="body"><div class="title">${meta.name}</div><div class="size">${meta.size}</div><div class="down-cancel"><button>Download</button><button>Cancel</button></div></div>`
+    else
+        div.innerHTML = `<div class="icon"></div><div class="body"><div class="title">${meta.name}</div><div class="size">${meta.size}</div></div>`
     history.prepend(div)
 }
 
