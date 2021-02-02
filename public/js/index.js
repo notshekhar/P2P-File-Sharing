@@ -1,3 +1,5 @@
+import * as Comlink from "./comlink.mjs"
+
 const v4 = function () {
     var dt = Date.now()
     var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
@@ -12,11 +14,13 @@ const v4 = function () {
 }
 
 const root = document.querySelector(".root")
+let worker = new Worker("./js/worker.js")
+const { handleDownloadData, getFileData } = Comlink.wrap(worker)
 
 const id = v4()
 
-let files = {}
-let colors = new Set()
+window.files = {}
+window.colors = new Set()
 function uniqueColor() {
     let c = "#xxxxxx"
     let str = "0123456789abcdef"
@@ -34,7 +38,7 @@ function uniqueColor() {
     }
     return c
 }
-let connections = {}
+window.connections = {}
 
 const peer = new Peer(id, {
     host: location.hostname,
@@ -230,21 +234,58 @@ function printFileMeta(meta, e) {
     div.id = `_${meta.id}`
     div.classList.add("file_card")
     let size = calculateSize(meta.size)
-    if (e)
-        div.innerHTML = `<div class="icon" style="background-color:${
-            connections[meta.from].color
-        }"></div><div class="body"><div class="title">${
-            meta.name
-        }</div><div class="size">${size}</div><div class="down-cancel"><button class="_down">Download</button><button class="_cancel">Cancel</button></div></div>`
-    else
-        div.innerHTML = `<div class="icon" style="background-color:black"></div><div class="body"><div class="title">${meta.name}</div><div class="size">${size}</div></div>`
+    let icon = document.createElement("div")
+    icon.classList.add("icon")
+    icon.style.backgroundColor = e ? connections[meta.from].color : "black"
+    let body = document.createElement("div")
+    body.classList.add("body")
+    let title = document.createElement("div")
+    title.classList.add("title")
+    title.innerHTML = meta.name
+    let size_div = document.createElement("div")
+    size_div.classList.add("size")
+    size_div.innerHTML = size
+    body.append(title, size_div)
+
+    if (e) {
+        let down_cancel = document.createElement("div")
+        down_cancel.classList.add("down-cancel")
+
+        let download = document.createElement("button")
+        download.classList.add("_down")
+        download.innerHTML = "Download"
+
+        download.addEventListener("click", () =>
+            connections[meta.from].connection.send({
+                type: "asking_data",
+                file_id: meta.id,
+                from: id,
+            })
+        )
+
+        let cancel = document.createElement("button")
+        cancel.classList.add("_cancel")
+        cancel.innerHTML = "Cancel"
+        cancel.addEventListener("click", () => div.remove())
+
+        down_cancel.append(download, cancel)
+        body.append(down_cancel)
+    }
+    div.append(icon, body)
     history.prepend(div)
 }
-function calculateSize(bytes) {
-    let sizes = ["Bytes", "KB", "MB", "GB", "TB"]
-    if (bytes == 0) return "0 Byte"
-    let i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)))
-    return Math.round(bytes / Math.pow(1024, i), 2) + " " + sizes[i]
+function calculateSize(bytes, decimals = 2) {
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const dm = decimals < 0 ? 0 : decimals
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
 }
 
+// async function init() {
+//     let a = await handleDownloadData(123)
+//     console.log(a)
+// }
+// init()
 // #2f0000
