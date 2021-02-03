@@ -180,10 +180,11 @@ function hideLoading(fid) {
 async function showDownloadProgress(fid) {
     let progress = document.querySelector(`#_${fid} > .body > .progress`)
     let p = await downloadPercentage(fid)
-    console.log(p)
+    // console.log(p)
     let bar = progress.querySelector(".bar")
     bar.style.width = `${p}%`
     progress.style.display = "block"
+    startLoading(fid)
 }
 function hideDownloadProgress(fid) {
     let progress = document.querySelector(`#_${fid} > .body > .progress`)
@@ -368,7 +369,6 @@ function printFileMeta(meta, e) {
                 file_id: meta.id,
                 from: id,
             })
-            startLoading(meta.id)
         }
 
         let cancel = document.createElement("button")
