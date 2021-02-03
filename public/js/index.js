@@ -1,4 +1,5 @@
 import * as Comlink from "./comlink.mjs"
+import { max_users } from "./config.js"
 
 const v4 = function () {
     var dt = Date.now()
@@ -71,10 +72,20 @@ peer.on("open", (id) => {
 socket.on("user-joined", (uid) => {
     console.log(uid, "->", "joined room")
     // root.innerHTML += `<br>${uid} -> joined room`
-    socket.emit("confirmed-joined", uid, id)
-    addConnection(uid)
-    addUserDiv(uid)
-    checkConnections()
+    if (max_users > Object.keys(connections).length) {
+        socket.emit("confirmed-joined", uid, id)
+        addConnection(uid)
+        addUserDiv(uid)
+        checkConnections()
+    } else {
+        socket.emit("room-full", uid)
+    }
+})
+socket.on("room-full", () => {
+    let p = confirm("Room is full, Create new Room")
+    if (p) {
+        window.location = window.location.origin
+    }
 })
 
 socket.on("confirmed-joined", (uid) => {
@@ -429,7 +440,7 @@ function init() {
     let close_btn = document.querySelector(".share > .wrap > .cancel")
     close_div.addEventListener("click", toggleShareDiv)
     close_btn.addEventListener("click", toggleShareDiv)
-    
+
     function toggleShareDiv() {
         share_div.style.display = hidden ? "block" : "none"
         hidden = !hidden
