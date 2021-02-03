@@ -395,9 +395,53 @@ function calculateSize(bytes, decimals = 2) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
 }
 
-// async function init() {
-//     let a = await handleDownloadData(123)
-//     console.log(a)
-// }
-// init()
-// #2f0000
+//add users prompt
+
+function init() {
+    let hidden = true
+    let add_btn = document.querySelector(".addUsers")
+    add_btn.addEventListener("click", toggleShareDiv)
+
+    let share_div = document.querySelector(".share")
+
+    new QRCode(document.querySelector(".wrap > .qr_url > .qr "), {
+        text: `${window.location}`,
+        width: 128,
+        height: 128,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H,
+    })
+    let input = document.querySelector(".wrap > .qr_url > .url > input")
+    input.value = window.location
+    let btn = document.querySelector(".wrap > .qr_url > .url > button")
+    btn.addEventListener("click", () => {
+        input.select()
+        let c = document.execCommand("copy")
+        if (c) n_message("copied")
+    })
+    input.addEventListener("click", () => {
+        input.select()
+        let c = document.execCommand("copy")
+        if (c) n_message("copied")
+    })
+    let close_div = document.querySelector(".share > .close")
+    let close_btn = document.querySelector(".share > .wrap > .cancel")
+    close_div.addEventListener("click", toggleShareDiv)
+    close_btn.addEventListener("click", toggleShareDiv)
+    
+    function toggleShareDiv() {
+        share_div.style.display = hidden ? "block" : "none"
+        hidden = !hidden
+    }
+}
+init()
+
+function n_message(message) {
+    let n_message = document.querySelector(".n_message")
+    n_message.style.display = "block"
+    n_message.innerHTML = message
+    setTimeout(() => {
+        n_message.style.display = "none"
+    }, 2000)
+}

@@ -329,6 +329,112 @@ input[type="file"] {
     background-color: orange;
     transition: width 300ms;
 }
+.addUsers {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+.share {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+    z-index: 10;
+    display: none;
+}
+.close {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 9;
+}
+.wrap {
+    position: fixed;
+    top: calc(50% - 150px);
+    left: calc(50% - 250px);
+    height: 300px;
+    width: 500px;
+    background-color: var(--secondary-bg);
+    z-index: 10;
+    color: white;
+    font-family: sans-serif;
+    font-weight: 400;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+}
+.wrap > .cancel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+.wrap > .title {
+    position: relative;
+    margin: 40px 20px 20px 20px;
+}
+.wrap > .qr_url {
+    position: relative;
+    margin: 20px;
+    display: flex;
+    gap: 20px;
+}
+.wrap > .qr_url > .qr {
+    position: relative;
+    max-width: 150px;
+    min-width: 150px;
+    max-height: 150px;
+    min-height: 150px;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+.wrap > .qr_url > .url {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+.wrap > .qr_url > .url > * {
+    position: relative;
+    height: 35px;
+    width: 250px;
+    border: none;
+    margin: 0;
+    display: inline-block;
+    border-radius: 5px;
+    font-weight: 600;
+    text-align: center;
+    outline: none;
+    cursor: pointer;
+}
+.wrap > .qr_url > .url > input {
+    background-color: var(--light-bg);
+    color: #6a6a6a;
+    font-size: 11px;
+}
+.wrap > .qr_url > .url > button {
+    background-color: gray;
+}
+.n_message {
+    position: fixed;
+    padding: 10px;
+    bottom: 20px;
+    left: 20px;
+    color: var(--secondary-bg);
+    background-color: rgba(255, 255, 255, 0.5);
+    display: none;
+    z-index: 10000;
+    font-weight: 600;
+    border-radius: 5px;
+    font-family: sans-serif;
+    font-size: 12px;
+}
 /* ._down {
     background-color: blue;
 }
@@ -341,6 +447,10 @@ input[type="file"] {
     }
     .root > .chat {
         display: none;
+    }
+    .wrap {
+        width: 100%;
+        left: 0px;
     }
 }
 /*# sourceMappingURL=index.css.map */

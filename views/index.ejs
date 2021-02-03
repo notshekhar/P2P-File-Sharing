@@ -11,17 +11,41 @@
             rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
         />
+        <script src="./js/qrcode.min.js"></script>
         <script>
             const ROOM_ID = "<%= id %>"
         </script>
     </head>
     <body>
+        <div class="n_message"></div>
+        <div class="share">
+            <div class="close"></div>
+            <div class="wrap">
+                <div class="cancel">
+                    <i class="fas fa-times"></i>
+                </div>
+                <div class="title">
+                    To connect to your network and start copying files, scan the
+                    QR code below, open the URL on another device,
+                </div>
+                <div class="qr_url">
+                    <div class="qr"></div>
+                    <div class="url">
+                        <input type="text" readonly />
+                        <button>Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="new_message">
             <i>show</i>
         </div>
         <div class="root">
             <div class="share_file_container">
                 <div class="connected-users">
+                    <div class="addUsers">
+                        <i class="fas fa-plus"></i>
+                    </div>
                     <div class="title">Connected Users</div>
                     <div class="waiting">Waiting for user to connect....</div>
                     <div class="users"></div>
