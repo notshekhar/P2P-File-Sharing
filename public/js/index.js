@@ -17,7 +17,7 @@ const root = document.querySelector(".root")
 let interval
 
 let worker = new Worker("./js/worker.js")
-const { handleDownloadData, getFileData } = Comlink.wrap(worker)
+const { handleDownloadData, getFileData, cleanMemory } = Comlink.wrap(worker)
 
 const id = v4()
 
@@ -98,8 +98,10 @@ peer.on("connection", async (connection) => {
             sendStream(e.file_id, e.from)
         } else if (e.type == "data_chunk") {
             // console.log(new Uint8Array(e.value))
-            handleDownloadData(e)
-            showDownloadProgress(e)
+            if (file_metas[e.file_id].download == true) {
+                handleDownloadData(e, file_metas[e.file_id].size)
+                showDownloadProgress(e)
+            }
             if (e.done) downloadFile(e.file_id)
         }
     })
@@ -144,8 +146,9 @@ function sendStream(file_id, to) {
     // console.log(files[file_id], to)
 }
 async function downloadFile(fid) {
-    hideDownloadProgress(fid)
+    startLoading(fid)
     let data = await getFileData(fid)
+    hideLoading(fid)
     let meta = file_metas[fid]
     let downloadButon = document.querySelector(
         `#_${meta.id} > .body > .down-cancel > ._down`
@@ -155,6 +158,25 @@ async function downloadFile(fid) {
         download(data, meta.name, meta.type)
     }
     download(data, meta.name, meta.type)
+    hideDownloadProgress(fid)
+}
+function startLoading(fid) {
+    let downloadButon = document.querySelector(
+        `#_${fid} > .body > .down-cancel > ._down`
+    )
+    let dot = 1
+    file_loading[fid].interval = setInterval(() => {
+        let str = ""
+        for (let i = 0; i < dot; i++) {
+            str += "."
+        }
+        downloadButon.innerHTML = str
+        dot++
+        dot = (dot % 4) + 1
+    }, 300)
+}
+function hideLoading(fid) {
+    clearInterval(file_loading[fid].interval)
 }
 
 function showDownloadProgress(e) {
@@ -336,6 +358,7 @@ function printFileMeta(meta, e) {
     body.append(title, size_div)
     if (e) {
         file_metas[meta.id] = meta
+        file_metas[meta.id].download = true
         file_loading[meta.id] = { totalBytes: meta.size }
         let progress = document.createElement("div")
         progress.classList.add("progress")
@@ -359,7 +382,11 @@ function printFileMeta(meta, e) {
         let cancel = document.createElement("button")
         cancel.classList.add("_cancel")
         cancel.innerHTML = "Cancel"
-        cancel.addEventListener("click", () => div.remove())
+        cancel.addEventListener("click", async () => {
+            file_metas[meta.id].download = false
+            div.remove()
+            cleanMemory(meta.id)
+        })
 
         down_cancel.append(download, cancel)
         body.append(progress, down_cancel)
