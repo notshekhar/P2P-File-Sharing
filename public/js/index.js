@@ -14,12 +14,15 @@ const v4 = function () {
 }
 
 const root = document.querySelector(".root")
+let interval
+
 let worker = new Worker("./js/worker.js")
 const { handleDownloadData, getFileData } = Comlink.wrap(worker)
 
 const id = v4()
 
 window.files = {}
+window.file_metas = {}
 window.colors = new Set()
 function uniqueColor() {
     let c = "#xxxxxx"
@@ -83,13 +86,19 @@ socket.on("user-disconnected", (uid) => {
     checkConnections()
 })
 
-peer.on("connection", (connection) => {
+peer.on("connection", async (connection) => {
     connection.on("data", (e) => {
-        console.log(e)
+        if (e.type != "data_chunk") console.log(e)
         if (e.type == "text") {
             addChat(e, true)
         } else if (e.type == "meta") {
             printFileMeta(e, true)
+        } else if (e.type == "asking_data") {
+            sendStream(e.file_id, e.from)
+        } else if (e.type == "data_chunk") {
+            // console.log(new Uint8Array(e.value))
+            handleDownloadData(e)
+            if (e.done) downloadFile(e.file_id)
         }
     })
 })
@@ -108,6 +117,54 @@ function sendMessage() {
         addChat({ message: value, from: id, type: "text" })
     }
 }
+// let data = new Uint8Array()
+function sendStream(file_id, to) {
+    let file = files[file_id]
+    let stream = file.stream()
+    let reader = stream.getReader()
+    reader.read().then(function processData({ done, value }) {
+        if (done) {
+            connections[to].connection.send({
+                done,
+                file_id,
+                type: "data_chunk",
+            })
+            return
+        }
+        connections[to].connection.send({
+            done,
+            value,
+            file_id,
+            type: "data_chunk",
+        })
+        reader.read().then(processData)
+    })
+    // console.log(files[file_id], to)
+}
+async function downloadFile(fid) {
+    let data = await getFileData(fid)
+    let meta = file_metas[fid]
+    let downloadButon = document.querySelector(
+        `#_${meta.id} > .body > .down-cancel > ._down`
+    )
+    downloadButon.innerHTML = "Download Again"
+    downloadButon.removeEventListener("click", () =>
+        console.log("removed event")
+    )
+    downloadButon.addEventListener("click", () => {
+        download(data, meta.name, meta.type)
+    })
+    download(data, meta.name, meta.type)
+}
+function download(data, filename, type) {
+    let blob = new Blob([data], { type })
+    let url = URL.createObjectURL(blob)
+    // window.open(url)
+    let a = document.createElement("a")
+    a.href = url
+    a.download = filename
+    a.click()
+}
 
 function checkConnections() {
     let keys = Object.keys(connections)
@@ -123,6 +180,7 @@ function showTools() {
     send_div.style.display = "block"
     history_div.style.display = "block"
     waiting.style.display = "none"
+    clearInterval(interval)
 }
 function hideTools() {
     let send_div = document.querySelector(".send")
@@ -131,6 +189,16 @@ function hideTools() {
     send_div.style.display = "none"
     history_div.style.display = "none"
     waiting.style.display = "block"
+    let dots = 0
+    interval = setInterval(() => {
+        let text = "Waiting for user to connect"
+        for (let i = 0; i < dots; i++) {
+            text += "."
+        }
+        waiting.innerHTML = text
+        dots++
+        dots %= 5
+    }, 200)
 }
 function addChat(chat, r) {
     let chat_body = document.querySelector(".chat > .body")
@@ -246,8 +314,8 @@ function printFileMeta(meta, e) {
     size_div.classList.add("size")
     size_div.innerHTML = size
     body.append(title, size_div)
-
     if (e) {
+        file_metas[meta.id] = meta
         let down_cancel = document.createElement("div")
         down_cancel.classList.add("down-cancel")
 
