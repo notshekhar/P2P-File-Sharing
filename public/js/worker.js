@@ -3,7 +3,7 @@ importScripts("./worker_comlink.js")
 let files_data = {}
 
 function handleDownloadData(chunk) {
-    console.log(chunk)
+    // console.log(chunk)
     if (!chunk.done)
         if (files_data[chunk.file_id]) {
             files_data[chunk.file_id] = new Uint8Array([

@@ -22,6 +22,7 @@ const { handleDownloadData, getFileData } = Comlink.wrap(worker)
 const id = v4()
 
 window.files = {}
+window.file_loading = {}
 window.file_metas = {}
 window.colors = new Set()
 function uniqueColor() {
@@ -98,6 +99,7 @@ peer.on("connection", async (connection) => {
         } else if (e.type == "data_chunk") {
             // console.log(new Uint8Array(e.value))
             handleDownloadData(e)
+            showDownloadProgress(e)
             if (e.done) downloadFile(e.file_id)
         }
     })
@@ -142,19 +144,37 @@ function sendStream(file_id, to) {
     // console.log(files[file_id], to)
 }
 async function downloadFile(fid) {
+    hideDownloadProgress(fid)
     let data = await getFileData(fid)
     let meta = file_metas[fid]
     let downloadButon = document.querySelector(
         `#_${meta.id} > .body > .down-cancel > ._down`
     )
-    downloadButon.innerHTML = "Download Again"
-    downloadButon.removeEventListener("click", () =>
-        console.log("removed event")
-    )
-    downloadButon.addEventListener("click", () => {
+    downloadButon.innerHTML = "Save Again"
+    downloadButon.onclick = () => {
         download(data, meta.name, meta.type)
-    })
+    }
     download(data, meta.name, meta.type)
+}
+
+function showDownloadProgress(e) {
+    let progress = document.querySelector(`#_${e.file_id} > .body > .progress`)
+    let bar = progress.querySelector(".bar")
+    if (!e.done) {
+        if (!file_loading[e.file_id].recieved)
+            file_loading[e.file_id].recieved = e.value.byteLength
+        else file_loading[e.file_id].recieved += e.value.byteLength
+
+        let recieved = file_loading[e.file_id].recieved
+        let total = file_loading[e.file_id].totalBytes
+
+        bar.style.width = `${(recieved / total) * 100}%`
+    }
+    progress.style.display = "block"
+}
+function hideDownloadProgress(fid) {
+    let progress = document.querySelector(`#_${fid} > .body > .progress`)
+    progress.remove()
 }
 function download(data, filename, type) {
     let blob = new Blob([data], { type })
@@ -316,6 +336,12 @@ function printFileMeta(meta, e) {
     body.append(title, size_div)
     if (e) {
         file_metas[meta.id] = meta
+        file_loading[meta.id] = { totalBytes: meta.size }
+        let progress = document.createElement("div")
+        progress.classList.add("progress")
+        let progress_loading = document.createElement("div")
+        progress_loading.classList.add("bar")
+        progress.append(progress_loading)
         let down_cancel = document.createElement("div")
         down_cancel.classList.add("down-cancel")
 
@@ -323,13 +349,12 @@ function printFileMeta(meta, e) {
         download.classList.add("_down")
         download.innerHTML = "Download"
 
-        download.addEventListener("click", () =>
+        download.onclick = () =>
             connections[meta.from].connection.send({
                 type: "asking_data",
                 file_id: meta.id,
                 from: id,
             })
-        )
 
         let cancel = document.createElement("button")
         cancel.classList.add("_cancel")
@@ -337,7 +362,7 @@ function printFileMeta(meta, e) {
         cancel.addEventListener("click", () => div.remove())
 
         down_cancel.append(download, cancel)
-        body.append(down_cancel)
+        body.append(progress, down_cancel)
     }
     div.append(icon, body)
     history.prepend(div)

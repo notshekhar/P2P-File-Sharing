@@ -289,20 +289,20 @@ input[type="file"] {
     max-height: 25px;
     border-radius: 5px;
 }
-.history > .file_card > .body{
+.history > .file_card > .body {
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
-.history > .file_card > .body > .size{
+.history > .file_card > .body > .size {
     color: #6a6a6a;
     font-size: 13px;
     font-weight: 600;
 }
 .history > .file_card > .body > .down-cancel > * {
     position: relative;
-    width: 80px;
+    width: 100px;
     height: 30px;
     border: none;
     border-radius: 5px;
@@ -311,6 +311,23 @@ input[type="file"] {
     margin-right: 10px;
     background-color: gray;
     font-weight: 600;
+}
+.file_card > .body > .progress {
+    position: relative;
+    display: none;
+    width: 95%;
+    height: 15px;
+    border-radius: 5px;
+    outline: none;
+    overflow: hidden;
+    transition: all 300ms;
+}
+.progress > .bar {
+    position: absolute;
+    height: 100%;
+    width: 0px;
+    background-color: orange;
+    transition: all 300ms;
 }
 /* ._down {
     background-color: blue;
