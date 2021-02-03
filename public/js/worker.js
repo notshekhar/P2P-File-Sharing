@@ -2,8 +2,10 @@ importScripts("./worker_comlink.js")
 
 let files_data = {}
 let recieved = {}
+let sizes = {}
 
 function handleDownloadData(chunk, size) {
+    sizes[chunk.file_id] = size
     // console.log(chunk)
     if (!chunk.done) {
         if (files_data[chunk.file_id]) {
@@ -30,7 +32,16 @@ function getFileData(fid) {
     // console.log(files_data[id])
     return files_data[fid]
 }
+function downloadPercentage(fid) {
+    // console.log(recieved[fid], sizes[fid])
+    return (recieved[fid] / sizes[fid]) * 100
+}
 function cleanMemory(fid) {
     files_data[fid] = new Uint8Array()
 }
-Comlink.expose({ handleDownloadData, getFileData, cleanMemory })
+Comlink.expose({
+    handleDownloadData,
+    getFileData,
+    cleanMemory,
+    downloadPercentage,
+})

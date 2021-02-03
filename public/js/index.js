@@ -17,12 +17,16 @@ const root = document.querySelector(".root")
 let interval
 
 let worker = new Worker("./js/worker.js")
-const { handleDownloadData, getFileData, cleanMemory } = Comlink.wrap(worker)
+const {
+    handleDownloadData,
+    getFileData,
+    cleanMemory,
+    downloadPercentage,
+} = Comlink.wrap(worker)
 
 const id = v4()
 
 window.files = {}
-window.file_loading = {}
 window.file_metas = {}
 window.colors = new Set()
 function uniqueColor() {
@@ -100,7 +104,7 @@ peer.on("connection", async (connection) => {
             // console.log(new Uint8Array(e.value))
             if (file_metas[e.file_id].download == true) {
                 handleDownloadData(e, file_metas[e.file_id].size)
-                showDownloadProgress(e)
+                showDownloadProgress(e.file_id)
             }
             if (e.done) downloadFile(e.file_id)
         }
@@ -146,7 +150,6 @@ function sendStream(file_id, to) {
     // console.log(files[file_id], to)
 }
 async function downloadFile(fid) {
-    startLoading(fid)
     let data = await getFileData(fid)
     hideLoading(fid)
     let meta = file_metas[fid]
@@ -164,34 +167,22 @@ function startLoading(fid) {
     let downloadButon = document.querySelector(
         `#_${fid} > .body > .down-cancel > ._down`
     )
-    let dot = 1
-    file_loading[fid].interval = setInterval(() => {
-        let str = ""
-        for (let i = 0; i < dot; i++) {
-            str += "."
-        }
-        downloadButon.innerHTML = str
-        dot++
-        dot = (dot % 4) + 1
-    }, 300)
+    downloadButon.disabled = true
+    downloadButon.innerHTML = "..."
 }
 function hideLoading(fid) {
-    clearInterval(file_loading[fid].interval)
+    let downloadButon = document.querySelector(
+        `#_${fid} > .body > .down-cancel > ._down`
+    )
+    downloadButon.disabled = false
 }
 
-function showDownloadProgress(e) {
-    let progress = document.querySelector(`#_${e.file_id} > .body > .progress`)
+async function showDownloadProgress(fid) {
+    let progress = document.querySelector(`#_${fid} > .body > .progress`)
+    let p = await downloadPercentage(fid)
+    console.log(p)
     let bar = progress.querySelector(".bar")
-    if (!e.done) {
-        if (!file_loading[e.file_id].recieved)
-            file_loading[e.file_id].recieved = e.value.byteLength
-        else file_loading[e.file_id].recieved += e.value.byteLength
-
-        let recieved = file_loading[e.file_id].recieved
-        let total = file_loading[e.file_id].totalBytes
-
-        bar.style.width = `${(recieved / total) * 100}%`
-    }
+    bar.style.width = `${p}%`
     progress.style.display = "block"
 }
 function hideDownloadProgress(fid) {
@@ -359,7 +350,6 @@ function printFileMeta(meta, e) {
     if (e) {
         file_metas[meta.id] = meta
         file_metas[meta.id].download = true
-        file_loading[meta.id] = { totalBytes: meta.size }
         let progress = document.createElement("div")
         progress.classList.add("progress")
         let progress_loading = document.createElement("div")
@@ -372,12 +362,14 @@ function printFileMeta(meta, e) {
         download.classList.add("_down")
         download.innerHTML = "Download"
 
-        download.onclick = () =>
+        download.onclick = () => {
             connections[meta.from].connection.send({
                 type: "asking_data",
                 file_id: meta.id,
                 from: id,
             })
+            startLoading(meta.id)
+        }
 
         let cancel = document.createElement("button")
         cancel.classList.add("_cancel")
