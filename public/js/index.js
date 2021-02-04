@@ -29,6 +29,7 @@ const id = v4()
 
 window.files = {}
 window.file_metas = {}
+window.sendingFile = {}
 window.colors = new Set()
 function uniqueColor() {
     let c = "#xxxxxx"
@@ -113,6 +114,7 @@ peer.on("connection", async (connection) => {
         } else if (e.type == "meta") {
             printFileMeta(e, true)
         } else if (e.type == "asking_data") {
+            sendingFile[e.file_id] = true
             sendStream(e.file_id, e.from)
         } else if (e.type == "data_chunk") {
             // console.log(new Uint8Array(e.value))
@@ -121,6 +123,8 @@ peer.on("connection", async (connection) => {
                 showDownloadProgress(e.file_id)
             }
             if (e.done) downloadFile(e.file_id)
+        } else if (e.type == "stop_sending_file_data") {
+            stopSendingFile(e.file_id)
         }
     })
 })
@@ -139,12 +143,18 @@ function sendMessage() {
         addChat({ message: value, from: id, type: "text" })
     }
 }
+function stopSendingFile(fid) {
+    sendingFile[fid] = false
+    // let div = document.querySelector(`#_${fid}`)
+    // div.remove()
+}
 // let data = new Uint8Array()
 function sendStream(file_id, to) {
     let file = files[file_id]
     let stream = file.stream()
     let reader = stream.getReader()
     reader.read().then(function processData({ done, value }) {
+        if (!sendingFile[file_id]) return
         if (done) {
             connections[to].connection.send({
                 done,
@@ -405,6 +415,10 @@ function printFileMeta(meta, e) {
             file_metas[meta.id].download = false
             div.remove()
             cleanMemory(meta.id)
+            connections[meta.from].connection.send({
+                type: "stop_sending_file_data",
+                file_id: meta.id,
+            })
         })
 
         down_cancel.append(download, cancel)
