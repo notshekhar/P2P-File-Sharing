@@ -156,6 +156,7 @@ function sendStream(file_id, to) {
             file_id,
             type: "data_chunk",
         })
+        //delay for some milisececonds
         reader.read().then(processData)
     })
     // console.log(files[file_id], to)
