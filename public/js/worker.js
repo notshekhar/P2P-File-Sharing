@@ -3,9 +3,9 @@ importScripts("./worker_comlink.js")
 let files_data = {}
 let recieved = {}
 let sizes = {}
+let downloadStartAt = {}
 
 function handleDownloadData(chunk, size) {
-    sizes[chunk.file_id] = size
     // console.log(chunk)
     if (!chunk.done) {
         if (files_data[chunk.file_id]) {
@@ -20,6 +20,8 @@ function handleDownloadData(chunk, size) {
             recieved[chunk.file_id] += data.length
         } else {
             files_data[chunk.file_id] = new Uint8Array(size)
+            sizes[chunk.file_id] = size
+            downloadStartAt[chunk.file_id] = Date.now()
             let data = new Uint8Array(chunk.value)
             for (let i = 0; i < data.length; i++) {
                 files_data[chunk.file_id][i] = data[i]
@@ -34,7 +36,12 @@ function getFileData(fid) {
 }
 function downloadPercentage(fid) {
     // console.log(recieved[fid], sizes[fid])
-    return (recieved[fid] / sizes[fid]) * 100
+    let t_in_sec = (Date.now() - downloadStartAt[fid]) / 1000
+    return {
+        per: (recieved[fid] / sizes[fid]) * 100,
+        speed: recieved[fid] / t_in_sec,
+        recieved: recieved[fid],
+    }
 }
 function cleanMemory(fid) {
     files_data[fid] = new Uint8Array()

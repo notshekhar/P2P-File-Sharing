@@ -102,6 +102,9 @@ socket.on("user-disconnected", (uid) => {
     checkConnections()
 })
 
+peer.on("error", (err) => {
+    console.log(err)
+})
 peer.on("connection", async (connection) => {
     connection.on("data", (e) => {
         if (e.type != "data_chunk") console.log(e)
@@ -158,6 +161,7 @@ function sendStream(file_id, to) {
         })
         //delay for some milisececonds
         reader.read().then(processData)
+        // setTimeout(() => reader.read().then(processData), 1)
     })
     // console.log(files[file_id], to)
 }
@@ -191,16 +195,22 @@ function hideLoading(fid) {
 
 async function showDownloadProgress(fid) {
     let progress = document.querySelector(`#_${fid} > .body > .progress`)
-    let p = await downloadPercentage(fid)
+    let speed_div = document.querySelector(`#_${fid} > .body > .speed`)
+    let { per, speed, recieved } = await downloadPercentage(fid)
     // console.log(p)
     let bar = progress.querySelector(".bar")
-    bar.style.width = `${p}%`
+    bar.style.width = `${per}%`
     progress.style.display = "block"
-    startLoading(fid)
+    speed_div.style.display = "block"
+    speed_div.innerHTML = `${calculateSize(recieved)} - ${calculateSize(
+        speed
+    )}/SEC`
 }
 function hideDownloadProgress(fid) {
     let progress = document.querySelector(`#_${fid} > .body > .progress`)
+    let speed = document.querySelector(`#_${fid} > .body > .speed`)
     progress.remove()
+    speed.remove()
 }
 function download(data, filename, type) {
     let blob = new Blob([data], { type })
@@ -368,6 +378,10 @@ function printFileMeta(meta, e) {
         let progress_loading = document.createElement("div")
         progress_loading.classList.add("bar")
         progress.append(progress_loading)
+
+        let speed = document.createElement("div")
+        speed.classList.add("speed")
+
         let down_cancel = document.createElement("div")
         down_cancel.classList.add("down-cancel")
 
@@ -381,6 +395,7 @@ function printFileMeta(meta, e) {
                 file_id: meta.id,
                 from: id,
             })
+            startLoading(meta.id)
         }
 
         let cancel = document.createElement("button")
@@ -393,7 +408,7 @@ function printFileMeta(meta, e) {
         })
 
         down_cancel.append(download, cancel)
-        body.append(progress, down_cancel)
+        body.append(progress, speed, down_cancel)
     }
     div.append(icon, body)
     history.prepend(div)
