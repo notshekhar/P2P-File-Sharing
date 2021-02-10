@@ -1,6 +1,11 @@
 import * as Comlink from "./comlink.mjs"
 import { max_users } from "./config.js"
 
+const escape_string = (unsafe) =>
+    unsafe.replace(/[^]/g, function (e) {
+        return "&#" + e.charCodeAt(0) + ";"
+    })
+
 const v4 = function () {
     var dt = Date.now()
     var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
@@ -107,6 +112,9 @@ peer.on("error", (err) => {
     console.log(err)
 })
 peer.on("connection", async (connection) => {
+    connection.on("error", (err) => {
+        if (err.type == "disconnect") connection.reconnect()
+    })
     connection.on("data", (e) => {
         if (e.type != "data_chunk") console.log(e)
         if (e.type == "text") {
@@ -170,8 +178,8 @@ function sendStream(file_id, to) {
             type: "data_chunk",
         })
         //delay for some milisececonds
-        reader.read().then(processData)
-        // setTimeout(() => reader.read().then(processData), 1)
+        // reader.read().then(processData)
+        setTimeout(() => reader.read().then(processData))
     })
     // console.log(files[file_id], to)
 }
@@ -276,8 +284,10 @@ function addChat(chat, r) {
               connections[chat.from].color
           }"></div><div class="text"><div class="title">${
               chat.from
-          }</div><div class="value">${chat.message}</div></div>`
-        : `<div class="icon" style="background-color:black"></div><div class="text"><div class="title">You</div><div class="value">${chat.message}</div></div>`
+          }</div><div class="value">${escape_string(chat.message)}</div></div>`
+        : `<div class="icon" style="background-color:black"></div><div class="text"><div class="title">You</div><div class="value">${escape_string(
+              chat.message
+          )}</div></div>`
     chat_body.prepend(message_div)
 }
 // message = (type, data, id)
@@ -375,10 +385,10 @@ function printFileMeta(meta, e) {
     body.classList.add("body")
     let title = document.createElement("div")
     title.classList.add("title")
-    title.innerHTML = meta.name
+    title.innerHTML = escape_string(meta.name)
     let size_div = document.createElement("div")
     size_div.classList.add("size")
-    size_div.innerHTML = size
+    size_div.innerHTML = escape_string(size)
     body.append(title, size_div)
     if (e) {
         file_metas[meta.id] = meta

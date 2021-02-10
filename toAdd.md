@@ -1,0 +1,3 @@
+-   [ ] small interept while sending a stream and sim. sending a message
+-   [ ] queuing sending message
+-   [ ] Create PWA
