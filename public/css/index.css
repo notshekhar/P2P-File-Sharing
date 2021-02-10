@@ -113,19 +113,27 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 10px;
     font-family: sans-serif;
     cursor: pointer;
     font-size: 13px;
-    background-color: var(--light-bg);
+    /* background-color: var(--light-bg); */
 }
 input[type="file"] {
     display: none;
 }
 .send > .drop_file > .icon {
-    background-color: grey;
+    background-color: var(--light-bg);
     height: 60px;
     width: 60px;
     border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.drop_file > .icon > * {
+    transform: scale(2);
+    color: white;
 }
 .send > .drop_file > div > .browse {
     font-weight: 600;
