@@ -34,11 +34,11 @@ import { max_users } from "./config.js"
 
     const id = v4()
 
-    let int = false
-    function setInterrupt(sec) {
-        int = true
-        setTimeout(() => (int = false), sec)
-    }
+    // let int = false
+    // function setInterrupt(sec) {
+    //     int = true
+    //     setTimeout(() => (int = false), sec)
+    // }
     window.files = {}
     window.file_metas = {}
     window.sendingFile = {}
@@ -157,7 +157,7 @@ import { max_users } from "./config.js"
         if (value.length > 0) {
             peerSend({ message: value, from: id, type: "text" })
             addChat({ message: value, from: id, type: "text" })
-            setInterrupt(100)
+            // setInterrupt(100)
         }
     }
     function stopSendingFile(fid) {
@@ -188,15 +188,15 @@ import { max_users } from "./config.js"
             })
             //delay for some milisececonds
             // reader.read().then(processData)
-            let interval = setInterval(() => {
-                if (!int) {
-                    setTimeout(() => reader.read().then(processData))
-                    clearInterval(interval)
-                } else {
-                    console.log("not sending data")
-                }
-            })
-            // setTimeout(() => reader.read().then(processData))
+            // let interval = setInterval(() => {
+            //     if (!int) {
+            //         setTimeout(() => reader.read().then(processData))
+            //         clearInterval(interval)
+            //     } else {
+            //         console.log("not sending data")
+            //     }
+            // })
+            setTimeout(() => reader.read().then(processData))
         })
         // console.log(files[file_id], to)
     }
@@ -389,6 +389,7 @@ import { max_users } from "./config.js"
         }
         peerSend(metaData)
         printFileMeta(metaData)
+        // setInterrupt(100)
     }
 
     function printFileMeta(meta, e) {
