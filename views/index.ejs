@@ -13,6 +13,17 @@
         />
         <script src="./js/qrcode.min.js"></script>
         <script>
+            //install service worker
+
+            // Check that service workers are supported
+            if ("serviceWorker" in navigator) {
+                // Use the window load event to keep the page load performant
+                window.addEventListener("load", () => {
+                    navigator.serviceWorker.register("./sw.js")
+                })
+            }
+        </script>
+        <script>
             const ROOM_ID = "<%= id %>"
         </script>
     </head>
@@ -38,7 +49,7 @@
             </div>
         </div>
         <div class="new_message">
-            <i>show</i>
+            <i class="fas fa-envelope-square"></i>
         </div>
         <div class="root">
             <div class="share_file_container">
@@ -63,6 +74,9 @@
                 <div class="history"></div>
             </div>
             <div class="chat">
+                <div class="hideChat">
+                    <i class="fas fa-times"><span> Close Chat</span></i>
+                </div>
                 <div class="body"></div>
                 <div class="input">
                     <input type="text" placeholder="Enter a Text" />
