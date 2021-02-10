@@ -3,7 +3,6 @@ import { max_users } from "./config.js"
 
 //
 ;(function () {
-    window.addEventListener("offline", () => console.log("offline"))
     const escape_string = (unsafe) =>
         unsafe.replace(/[^]/g, function (e) {
             return "&#" + e.charCodeAt(0) + ";"
@@ -35,10 +34,16 @@ import { max_users } from "./config.js"
 
     const id = v4()
 
+    let int = false
+    function setInterrupt(sec) {
+        int = true
+        setTimeout(() => (int = false), sec)
+    }
     window.files = {}
     window.file_metas = {}
     window.sendingFile = {}
     window.colors = new Set()
+
     function uniqueColor() {
         let c = "#xxxxxx"
         let str = "0123456789abcdef"
@@ -152,6 +157,7 @@ import { max_users } from "./config.js"
         if (value.length > 0) {
             peerSend({ message: value, from: id, type: "text" })
             addChat({ message: value, from: id, type: "text" })
+            setInterrupt(100)
         }
     }
     function stopSendingFile(fid) {
@@ -182,7 +188,15 @@ import { max_users } from "./config.js"
             })
             //delay for some milisececonds
             // reader.read().then(processData)
-            setTimeout(() => reader.read().then(processData))
+            let interval = setInterval(() => {
+                if (!int) {
+                    setTimeout(() => reader.read().then(processData))
+                    clearInterval(interval)
+                } else {
+                    console.log("not sending data")
+                }
+            })
+            // setTimeout(() => reader.read().then(processData))
         })
         // console.log(files[file_id], to)
     }
