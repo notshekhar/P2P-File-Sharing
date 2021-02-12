@@ -18,6 +18,7 @@ app.get("/", async (req, res, next) => {
             /x/g,
             (e) => str[Math.floor(Math.random() * str.length)]
         )
+        console.log(id)
         res.redirect(`/${id}`)
     } catch (err) {
         next(err)
