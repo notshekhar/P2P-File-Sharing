@@ -1,6 +1,6 @@
 {
-    "name": "p2p share",
-    "short_name": "p2pshare",
+    "name": "dropall",
+    "short_name": "dropall",
     "theme_color": "#111",
     "background_color": "#202020",
     "display": "fullscreen",
