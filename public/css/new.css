@@ -1,0 +1,79 @@
+:root {
+    --background: #111;
+    --secondary-bg: #202020;
+    --light-bg: #2a2a2a;
+    --color: #eeeeee;
+}
+
+*::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+* {
+    font-family: sans-serif;
+    margin: 0px;
+    outline: none;
+}
+
+.root {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: var(--background);
+    color: #6a6a6a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.wrap > * > * {
+    position: relative;
+    height: 35px;
+}
+.wrap > .join {
+    display: flex;
+}
+.wrap > .join > input {
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 5px 0 0 5px;
+    border: none;
+    outline: none;
+    color: #6a6a6a;
+    background-color: var(--light-bg);
+    min-width: 200px;
+    font-weight: 700;
+}
+.wrap > .join > button {
+    height: 37px;
+    min-width: 80px;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    color: white;
+    font-weight: 700;
+    background-color: var(--secondary-bg);
+}
+.wrap > form > .create_new {
+    position: relative;
+    min-width: 100%;
+    font-weight: 700;
+    height: 37px;
+    border: none;
+    border-radius: 5px;
+    color: #bababa;
+    font-weight: 700;
+    background-color: var(--secondary-bg);
+    transition: all 400ms;
+}
+.wrap > form > .create_new:hover {
+    transform: scale(1.05);
+}
