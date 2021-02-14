@@ -6,7 +6,7 @@ const initPeerServer = require("./peerServer")
 
 require("dotenv").config()
 
-process.env.DEPLOY == "dev" ? initPeerServer() : ""
+initPeerServer()
 
 const server = app.listen(process.env.PORT || 3000, () => {
     console.log(`listening to port -> ${server.address().port}`)

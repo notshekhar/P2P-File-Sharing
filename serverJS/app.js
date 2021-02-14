@@ -48,5 +48,5 @@ app.get("/:id", async (req, res, next) => {
     else res.render("new")
 })
 
-appq.use(errorHandler)
+app.use(errorHandler)
 module.exports = app
