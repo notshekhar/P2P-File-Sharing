@@ -1,5 +1,5 @@
 import * as Comlink from "./comlink.mjs"
-import { max_users } from "./config.js"
+import { deploy, max_users, peer_url } from "./config.js"
 
 //
 ;(function () {
@@ -63,12 +63,17 @@ import { max_users } from "./config.js"
     }
     window.connections = {}
 
-    const peer = new Peer(id, {
-        host: location.hostname,
-        port: 3001,
-        // path: "/peerjs",
-        path: "/",
-    })
+    const peer = new Peer(
+        id,
+        deploy == "dev"
+            ? {
+                  host: location.hostname,
+                  port: 3001,
+                  // path: "/peerjs",
+                  path: "/",
+              }
+            : peer_url
+    )
     const socket = io("/")
 
     function peerSend(data) {
