@@ -2,14 +2,22 @@ importScripts(
     "https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js"
 )
 
-workbox.precaching.precacheAndRoute(["./index.html"])
+workbox.precaching.precacheAndRoute(["/"])
+workbox.precaching.precacheAndRoute(["./sounds/new_message.mp3"])
+workbox.precaching.precacheAndRoute(["./sounds/new_file.mp3"])
+
 workbox.routing.registerRoute(
     /\.js$/,
     new workbox.strategies.StaleWhileRevalidate({
         cacheName: "js-cache",
     })
 )
-
+workbox.routing.registerRoute(
+    /\.css$/,
+    new workbox.strategies.StaleWhileRevalidate({
+        cacheName: "css-cache",
+    })
+)
 workbox.routing.registerRoute(
     /\.json$/,
     new workbox.strategies.StaleWhileRevalidate({
@@ -39,11 +47,5 @@ workbox.routing.registerRoute(
                 maxAgeSeconds: 7 * 24 * 60 * 60,
             }),
         ],
-    })
-)
-workbox.routing.registerRoute(
-    /\.css$/,
-    new workbox.strategies.StaleWhileRevalidate({
-        cacheName: "css-cache",
     })
 )

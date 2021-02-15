@@ -1,3 +1,4 @@
--   [x] small interept while sending a stream and sim. sending a message
--   [ ] queuing sending message
--   [ ] Create PWA
+-   [ ] User can change thier Name
+-   [ ] Alert message on new message
+-   [x] Sound on new message appear and new file appear
+-   [ ] Pause and resume download

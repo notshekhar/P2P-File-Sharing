@@ -500,7 +500,7 @@ input[type="file"] {
         height: 100%;
         left: 0px;
         margin: 0;
-        position: absolute;
+        position: fixed;
         /* background: red; */
     }
     .root > .chat > .hideChat {

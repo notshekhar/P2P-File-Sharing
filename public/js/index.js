@@ -43,6 +43,10 @@ import { deploy, max_users, peer_url } from "./config.js"
     window.file_metas = {}
     window.sendingFile = {}
     window.colors = new Set()
+    window.sounds = {
+        new_message: new Audio("./sounds/new_message.mp3"),
+        new_file: new Audio("./sounds/new_file.mp3"),
+    }
 
     function uniqueColor() {
         let c = "#xxxxxx"
@@ -313,6 +317,7 @@ import { deploy, max_users, peer_url } from "./config.js"
                   chat.message
               )}</div></div>`
         chat_body.prepend(message_div)
+        if (r) PlayNewMessageSound()
     }
     // message = (type, data, id)
     function addConnection(uid) {
@@ -458,6 +463,7 @@ import { deploy, max_users, peer_url } from "./config.js"
 
             down_cancel.append(download, cancel)
             body.append(progress, speed, down_cancel)
+            PlayNewFileSound()
         }
         div.append(icon, body)
         history.prepend(div)
@@ -471,8 +477,13 @@ import { deploy, max_users, peer_url } from "./config.js"
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i]
     }
 
+    function PlayNewMessageSound() {
+        sounds.new_message.play()
+    }
+    function PlayNewFileSound() {
+        sounds.new_file.play()
+    }
     //add users prompt
-
     function init() {
         let hidden = true
         let add_btn = document.querySelector(".addUsers")
