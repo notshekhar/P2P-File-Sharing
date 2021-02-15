@@ -2,7 +2,7 @@ importScripts(
     "https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js"
 )
 
-workbox.precaching.precacheAndRoute(["/"])
+workbox.precaching.precacheAndRoute(["./index.html"])
 workbox.precaching.precacheAndRoute(["./sounds/new_message.mp3"])
 workbox.precaching.precacheAndRoute(["./sounds/new_file.mp3"])
 
