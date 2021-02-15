@@ -1,4 +1,6 @@
 -   [ ] User can change thier Name
 -   [ ] Alert message on new message
+    -   [ ] Notification
+    -   [ ] If peerjs is busy in sending stream then send message using push notification
 -   [x] Sound on new message appear and new file appear
 -   [ ] Pause and resume download
