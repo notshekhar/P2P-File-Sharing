@@ -3,4 +3,7 @@
     -   [ ] Notification
     -   [ ] If peerjs is busy in sending stream then send message using push notification
 -   [x] Sound on new message appear and new file appear
+-   [ ] Sound on new message appear and new file appear not workin in mobile
+-   [ ] Background sync
 -   [ ] Pause and resume download
+-   [ ] Add a trun server(setup a trun server if possible)

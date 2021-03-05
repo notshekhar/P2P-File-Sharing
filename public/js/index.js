@@ -1,6 +1,9 @@
 import * as Comlink from "./comlink.mjs"
 import { deploy, max_users, peer_url } from "./config.js"
 
+function queueTask(cb) {
+    setTimeout(cb)
+}
 //
 ;(function () {
     const escape_string = (unsafe) =>
@@ -140,7 +143,7 @@ import { deploy, max_users, peer_url } from "./config.js"
                 printFileMeta(e, true)
             } else if (e.type == "asking_data") {
                 sendingFile[e.file_id] = true
-                sendStream(e.file_id, e.from)
+                queueTask(() => sendStream(e.file_id, e.from))
             } else if (e.type == "data_chunk") {
                 // console.log(new Uint8Array(e.value))
                 if (file_metas[e.file_id].download == true) {
@@ -164,7 +167,9 @@ import { deploy, max_users, peer_url } from "./config.js"
         let value = input.value
         input.value = ""
         if (value.length > 0) {
-            peerSend({ message: value, from: id, type: "text" })
+            queueTask(() =>
+                peerSend({ message: value, from: id, type: "text" })
+            )
             addChat({ message: value, from: id, type: "text" })
             // setInterrupt(100)
         }
@@ -205,7 +210,7 @@ import { deploy, max_users, peer_url } from "./config.js"
             //         console.log("not sending data")
             //     }
             // })
-            setTimeout(() => reader.read().then(processData))
+            queueTask(() => reader.read().then(processData))
         })
         // console.log(files[file_id], to)
     }
