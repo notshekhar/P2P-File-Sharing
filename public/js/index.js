@@ -28,12 +28,8 @@ function queueTask(cb) {
     let interval
 
     let worker = new Worker("./js/worker.js")
-    const {
-        handleDownloadData,
-        getFileData,
-        cleanMemory,
-        downloadPercentage,
-    } = Comlink.wrap(worker)
+    const { handleDownloadData, getFileData, cleanMemory, downloadPercentage } =
+        Comlink.wrap(worker)
 
     const id = v4()
 
@@ -52,20 +48,32 @@ function queueTask(cb) {
     }
 
     function uniqueColor() {
-        let c = "#xxxxxx"
-        let str = "0123456789abcdef"
-        c = c.replace(/x/g, (e) => str[Math.floor(Math.random() * str.length)])
-        while (true) {
-            if (colors.has(c)) {
-                c = c.replace(
-                    /x/g,
-                    (e) => str[Math.floor(Math.random() * str.length)]
-                )
-            } else {
-                colors.add(c)
-                break
+        function hslToHex(h, s, l) {
+            l /= 100
+            const a = (s * Math.min(l, 1 - l)) / 100
+            const f = (n) => {
+                const k = (n + h / 30) % 12
+                const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
+                return Math.round(255 * color)
+                    .toString(16)
+                    .padStart(2, "0") // convert to Hex and prefix "0" if needed
             }
+            return `#${f(0)}${f(8)}${f(4)}`
         }
+        let c = hslToHex(Math.floor(Math.random() * 255), 100, 50)
+        // let str = "0123456789abcdef"
+        // c = c.replace(/x/g, (e) => str[Math.floor(Math.random() * str.length)])
+        // while (true) {
+        //     if (colors.has(c)) {
+        //         c = c.replace(
+        //             /x/g,
+        //             (e) => str[Math.floor(Math.random() * str.length)]
+        //         )
+        //     } else {
+        //         colors.add(c)
+        //         break
+        //     }
+        // }
         return c
     }
     window.connections = {}
